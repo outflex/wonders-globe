@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080e14">
+  <meta name="description" content="Terra — ваш личный атлас открытий. Исследуйте 3D-глобус, находите необычные места, собирайте маршруты и делитесь ими.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Terra — мир за пределами привычного">
+  <meta property="og:description" content="Одна планета. Тысячи историй. Откройте своё следующее любимое место.">
+  <meta name="color-scheme" content="dark light">
+  <title>Terra — мир за пределами привычного</title>
+  <link rel="icon" type="image/svg+xml" href="./assets/logo.svg">
+  <link rel="apple-touch-icon" href="./assets/apple-touch-icon.png">
+  <link rel="manifest" href="./site.webmanifest">
+  <link rel="preconnect" href="https://cesium.com">
+  <link rel="stylesheet" href="https://cesium.com/downloads/cesiumjs/releases/1.121/Build/Cesium/Widgets/widgets.css">
+  <link rel="stylesheet" href="./src/styles.css">
+</head>
+<body>
+  <div id="globe" role="region" aria-label="Интерактивный 3D-глобус Земли"></div>
+  <div class="veil" aria-hidden="true"></div>
+  <header>
+    <a class="brand" href="./" aria-label="Terra — главная"><img class="brand-mark" src="./assets/logo.svg" width="36" height="36" alt=""><span class="brand-name">terra<span class="brand-dot">.</span></span></a>
+    <div class="header-right"><span class="live"><i></i> ОДНА ПЛАНЕТА. БЕЗ ГРАНИЦ.</span><button class="about-button" id="themeButton" aria-label="Включить светлую тему">☀ Светлая</button><button class="about-button" id="aboutButton">О проекте ↗</button></div>
+  </header>
+  <main>
+    <div class="eyebrow">Для тех, кому любопытно</div>
+    <h1>Мир больше,<br> чем кажется<span>.</span></h1>
+    <p class="intro">Где-то прямо сейчас начинается утро.<br>А где-то вас ждёт место, о котором<br>вы ещё не слышали.</p>
+    <button class="explore" id="exploreButton" disabled><span id="exploreLabel">Открыть случайное место</span><span aria-hidden="true">↗</span></button>
+    <p class="subnote">Один клик. Новый повод удивиться.</p>
+    <section class="discovery" aria-label="Выбрать место">
+      <form class="search-form" id="searchForm"><input class="search-input" id="searchInput" type="search" placeholder="Найти город…" aria-label="Название города" minlength="2" maxlength="100" required><button class="search-submit" id="searchButton" aria-label="Найти город" disabled>↗</button></form>
+      <div class="search-results glass" id="searchResults" aria-live="polite" hidden></div>
+      <div class="quick-actions"><button class="chip" id="dailyButton" disabled>✦ Место дня</button><button class="chip" id="collectionsButton" disabled>↗ Подборки</button><button class="chip" id="passportButton" disabled>◈ Паспорт <span id="passportCount">0</span></button></div>
+      <div class="quick-actions secondary-actions"><button class="chip" id="pickButton" aria-pressed="false" disabled>⌖ Точка на карте</button><button class="chip" id="coordinateButton" disabled>Координаты</button><button class="chip" id="savedButton" disabled>♡ Мои места</button></div>
+    </section>
+    <div class="suggestions"><div class="section-label">Или начните отсюда</div><div class="chips"><button class="chip" data-place="iceland" disabled>↗ Исландия</button><button class="chip" data-place="kyoto" disabled>↗ Киото</button><button class="chip" data-place="patagonia" disabled>↗ Патагония</button></div></div>
+    <aside class="sponsor" id="sponsor" aria-label="Реклама" hidden><span class="sponsor-label">Реклама · партнёр Terra</span><a id="sponsorLink" target="_blank" rel="sponsored noopener noreferrer"><span id="sponsorTitle"></span><span aria-hidden="true">↗</span></a><p id="sponsorDescription"></p></aside>
+  </main>
+  <aside class="info glass" id="info" aria-labelledby="placeTitle" hidden>
+    <button class="close" id="closeInfo" aria-label="Закрыть информацию">×</button>
+    <div class="info-photo" id="photoWrap" hidden><img id="placePhoto" alt="" decoding="async" referrerpolicy="no-referrer"><a id="photoCredit" class="photo-credit" target="_blank" rel="noopener noreferrer">Фото · автор и лицензия ↗</a></div>
+    <div class="info-content">
+      <div class="place-tag" id="placeTag">Новая точка на вашей карте</div><h2 id="placeTitle">Неизведанная Земля</h2><p class="distance" id="placeDistance"></p>
+      <p class="curated-note" id="curatedNote" hidden></p><p class="description" id="placeDescription"></p><a class="wiki-link" id="wikiLink" target="_blank" rel="noopener noreferrer" hidden>Читать в Википедии ↗</a>
+      <div class="metrics"><div><div class="metric-label">МЕСТНОЕ ВРЕМЯ</div><div class="metric-value" id="localTime">—</div><div class="metric-note" id="timezoneNote"></div></div><div><div class="metric-label">ПОГОДА СЕЙЧАС</div><div class="metric-value" id="weatherValue">—</div><div class="metric-note" id="weatherNote"></div></div></div>
+      <div class="info-footer" id="infoFooter">Каждая точка — начало новой истории.</div>
+      <div class="quick-actions"><button class="chip" id="saveButton">♡ Сохранить</button><button class="chip" id="shareButton">↗ Поделиться</button><button class="chip" id="nextButton">Ещё открытие →</button></div>
+      <input class="search-input share-field" id="shareField" aria-label="Ссылка на это место — скопируйте вручную" readonly hidden>
+    </div>
+  </aside>
+  <div class="controls" aria-label="Управление глобусом">
+    <button class="control" id="qualityButton" title="Экономичный режим: меньше нагрузка на GPU" aria-label="Экономичный режим" aria-pressed="true" disabled>♧</button>
+    <button class="control" id="bordersButton" title="Границы и названия стран" aria-label="Границы и названия стран" aria-pressed="true" disabled>▧</button>
+    <button class="control north" id="homeButton" title="Вся планета" aria-label="Вернуться к виду всей планеты" disabled>N ↑</button>
+    <button class="control" id="zoomIn" aria-label="Приблизить" title="Приблизить" disabled>+</button><button class="control" id="zoomOut" aria-label="Отдалить" title="Отдалить" disabled>−</button>
+    <button class="control" id="rotateButton" title="Автовращение" aria-label="Автовращение" aria-pressed="false" disabled>⟳</button>
+    <button class="control" id="lightButton" title="Реальный день и ночь" aria-label="Реальный день и ночь" aria-pressed="true" disabled>☼</button>
+  </div>
+  <footer class="bottom"><div class="coordinates"><div class="section-label">Ваш взгляд на мир</div><div id="coordinates">48.00° N &nbsp; 15.00° E</div></div><div class="hint"><span id="renderStatus">♧ Экономичный режим</span><span>Потяните, чтобы вращать · скролл для приближения</span></div></footer>
+  <div class="toast glass" id="toast" role="status" hidden></div><div class="sr-only" role="status" aria-live="polite" id="announcement"></div>
+  <div class="loading" id="loading"><img class="loading-logo" src="./assets/logo.svg" width="64" height="64" alt="Terra"><div class="spinner" id="spinner"></div><div id="loadingTitle">Весь мир. На одном экране.</div><p id="loadingText">Загружаем Землю…</p><button class="about-button" id="retryButton" hidden>Попробовать снова</button></div>
+  <dialog class="glass" id="coordinateDialog"><button class="close" data-close="coordinateDialog" aria-label="Закрыть">×</button><div class="eyebrow">Ваш собственный маршрут</div><h2>Куда отправимся?</h2><p>Нажмите на глобус или задайте координаты. Южная широта и западная долгота — со знаком минус.</p><form class="manual-form" id="coordinateForm"><label>Широта<input class="search-input" id="latitudeInput" type="number" min="-90" max="90" step="any" placeholder="55.7558" required></label><label>Долгота<input class="search-input" id="longitudeInput" type="number" min="-180" max="180" step="any" placeholder="37.6173" required></label><button class="explore" type="submit">Отправиться ↗</button></form></dialog>
+  <dialog class="glass" id="savedDialog"><button class="close" data-close="savedDialog" aria-label="Закрыть">×</button><div class="eyebrow">Личный атлас</div><h2>Мои места</h2><p>Сохранённые точки хранятся только в этом браузере.</p><div id="savedList"></div></dialog>
+  <dialog class="glass wide-dialog" id="collectionsDialog"><button class="close" data-close="collectionsDialog" aria-label="Закрыть">×</button><div class="eyebrow">Маленькие путешествия</div><h2>Выберите своё настроение.</h2><p>Необычная природа, города с историей или островная тишина. Каждая подборка — готовый повод задержаться.</p><div class="collection-tabs" id="collectionTabs" aria-label="Темы подборок"></div><div class="collection-list" id="collectionList"></div></dialog>
+  <dialog class="glass" id="passportDialog"><button class="close" data-close="passportDialog" aria-label="Закрыть">×</button><div class="passport-heading"><img src="./assets/logo.svg" width="36" height="36" alt=""><div class="eyebrow">Terra / паспорт исследователя</div></div><h2>Ваш мир становится больше.</h2><div class="passport-stats"><div><strong id="visitedCount">0</strong><span>открытых точек</span></div><div><strong id="savedCount">0</strong><span>в личном атласе</span></div></div><p id="passportGoal"></p><progress id="passportProgress" max="5" value="0" aria-label="Прогресс исследователя"></progress><div class="badges" id="passportBadges"></div><p>Открытия и коллекция хранятся на этом устройстве. Возвращайтесь за новым местом дня.</p></dialog>
+  <dialog class="glass" id="aboutDialog"><button class="close" data-close="aboutDialog" aria-label="Закрыть">×</button><div class="passport-heading"><img src="./assets/logo.svg" width="36" height="36" alt=""><div class="eyebrow">Terra / исследуйте Землю</div></div><h2>Следуйте любопытству.</h2><p>Выберите точку на глобусе, найдите город или откройте подборку. Собирайте личный атлас, отмечайте открытия в паспорте и делитесь ссылками.</p><p>Глобус отрисовывается по необходимости. Экономичный режим включён по умолчанию; кнопка ♧ переключает качество. Автовращение включается отдельно, фоновая вкладка не отрисовывается.</p><p>Статьи Википедии ищутся в радиусе 10 км: описание относится к статье, погода и время — к выбранной точке. Подборки содержат редакционные заметки Terra.</p><p>Часовой пояс и летнее время — по данным Open-Meteo. При недоступности сервиса показываем приблизительное солнечное время.</p><p>Карта и границы: Esri World Imagery / World Boundaries and Places · 3D: <a href="https://cesium.com/" target="_blank" rel="noopener noreferrer">CesiumJS</a><br>Тексты: <a href="https://www.wikipedia.org/" target="_blank" rel="noopener noreferrer">Wikipedia</a>, CC BY-SA · Погода и поиск: <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Open-Meteo</a>, CC BY 4.0; GeoNames. Лицензия фото — по ссылке под ним.</p><p>Нужны интернет и браузер с WebGL. Регистрация не требуется.</p></dialog>
+  <script type="module" src="./src/app.js"></script>
+</body>
+</html>
